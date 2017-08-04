@@ -65,18 +65,58 @@ Theta2_grad = zeros(size(Theta2));
 
 
 
+%------part1------------
+%feedforward
+a1=[ones(size(X,1),1) X];
+z2=a1*Theta1';
+a2=[ones(size(z2,1),1) sigmoid(z2)];
+z3=a2*Theta2';
+a3=sigmoid(z3);
+h=a3;
+
+%regularization parameter
+%params=[0;nn_params(2:end)];
+%size1=size(Theta1,1)*size(Theta1,2);
+%size2=size(Theta2)*size(Theta2,2);
+
+p = (sum(sum(Theta1(:, 2:end).^2, 2))+sum(sum(Theta2(:, 2:end).^2, 2)))*lambda/m/2;
+%params=[nn_params(2:size1) ; nn_params(size1+2:end)];
+%p=lambda*(params'*params)/2/m;
+
+%cost
+Y=zeros(m,num_labels);
+for i=1:m
+	Y(i,y(i))=1;
+end;
+
+J=-1/m*sum(sum(Y.*log(h)+(1-Y).*log(1-h),2)) +p;
+
+%----------part2-------------
+
+%g1=sigmoid(z2).*sigmoid(1-z2);
+
+%Delta1=zeros(size(Theta1));
+%Delta2=zeros(size(Theta2));
+
+Theta21=[Theta2(:,2:end)];
+
+sigma3=a3-Y;
+sigma2=sigma3*Theta21.*sigmoidGradient(z2);
+%sigma2 = (sigma3*Theta2).*sigmoidGradient(a2);
+%sigma2 = sigma2(:, 2:end);
+
+Delta1=sigma2'*a1;
+Delta2=sigma3'*a2;
 
 
 
 
+%regulariized terms
+r1=lambda/m*[zeros(size(Theta1,1),1) Theta1(:,2:end)];
+r2=lambda/m*[zeros(size(Theta2,1),1) Theta2(:,2:end)];
 
-
-
-
-
-
-
-
+Theta1_grad=1/m.*Delta1 + r1;
+Theta2_grad=1/m.*Delta2 + r2;
 
 
 
